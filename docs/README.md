@@ -32,7 +32,6 @@ Werkzeuge erhalten abhängig vom Status ein Präfix:
   - Beigestelltes Werkzeug  
   - Inaktiv (nicht in Verwendung in beiden Datenbanken)  
   - Versuchswerkzeug  
-  - Nicht freigegeben für Fertigungsklasse `F02IC`
 
 ---
 
