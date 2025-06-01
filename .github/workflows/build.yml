@@ -1,0 +1,83 @@
+name: Build Windows EXE for CAMsync
+
+on:
+  push:
+    tags:
+      - 'v*'
+      - '[0-9]*'   # erlaubt auch 0.2.5, 1.0.0 usw.
+    branches:
+      - main
+
+permissions:
+  contents: write  # notwendig für GitHub Releases
+
+jobs:
+  build:
+    name: Build CAMsync Executable
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # wichtig für git describe
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Generate version.py from git tag
+        run: python write_version.py
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller CAMsync.spec
+
+
+      - name: Upload .exe artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CAMsync_EXE
+          path: dist/**/CAMsync_v*.exe
+
+      - name: Prepare portable ZIP
+        run: |
+          mkdir CAMsync_portable
+          mkdir CAMsync_portable/assets
+          mkdir CAMsync_portable/docs
+
+          cp dist/*.exe CAMsync_portable/
+          cp src/assets/default_config.ini CAMsync_portable/config.ini
+          cp src/assets/material_mapping.ini CAMsync_portable/material_mapping.ini
+          cp src/assets/camsync_icon.ico CAMsync_portable/assets/camsync_icon.ico
+          cp docs/LICENSE CAMsync_portable/docs/LICENSE
+          cp docs/README.md CAMsync_portable/docs/README.de
+
+      - name: 🗜 Create portable ZIP
+        run: powershell Compress-Archive -Path CAMsync_portable -DestinationPath CAMsync_portable.zip
+
+      - name: Create GitHub Release (if tagged)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          name: CAMsync ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📎 Upload .exe and .zip to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/**/CAMsync_v*.exe
+            CAMsync_portable.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,8 @@
+pandas
+openpyxl
+pywin32
+sqlalchemy
+pytest
+pyinstaller
+requests
+polars

@@ -1,0 +1,46 @@
+
+
+
+um neue exe zu releasen:
+
+öffne git bash:
+cd /c/Users/PROJEKTVERZEIHCHNIS
+chmod +x release.sh
+./release.sh
+
+
+
+
+
+
+
+
+
+
+
+# virtuelle Umgebung erstellen und aktivieren:
+!!!zuerst alte löschen!!! (manuell)
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+
+ab und zu notwendig:
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser         #einmalig richtlinie lockern
+
+
+
+
+
+
+
+
+
+
+
+# um neue exe auf github erstellen (outdated, benutze git bash mit release.sh siehe oben):
+git tag v1.3.0
+git push origin v1.3.0
+
+# um exe lokal zu erstellen:
+pyinstaller CAMsync.spec
+

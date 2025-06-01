@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+*.tmp
+*.bak
+*.swp
+
+# Virtuelle Umgebung
+venv/
+.env/
+.venv/
+
+# IDEs & Tools
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Installer / PyInstaller
+#*.spec
+output/
+*.exe
+
+# OS-spezifisch
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Logs, Reports
+*.log
+*.bak
+*.old
+
+# Byte-compiled Caches
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Jupyter Notebooks Checkpoints
+.ipynb_checkpoints/
+
+# Unit test / coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+pytest_cache/
+
+# SQLite-Datenbanken (optional)
+*.sqlite
+#*.db
+
+# Backup-Dateien
+*.zip
+*.tar.gz
+*.tar
