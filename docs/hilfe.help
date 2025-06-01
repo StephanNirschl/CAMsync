@@ -14,10 +14,6 @@ chmod +x release.sh
 
 
 
-
-
-
-
 # virtuelle Umgebung erstellen und aktivieren:
 !!!zuerst alte löschen!!! (manuell)
 python -m venv venv
