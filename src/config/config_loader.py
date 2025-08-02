@@ -1,7 +1,7 @@
 import configparser
 import os
-import shutil
 from paths import get_config_path
+
 
 class ConfigLoader:
     def __init__(self, config_path=None, silent=False):
@@ -39,3 +39,7 @@ class ConfigLoader:
             return dict(self.config[section])
         except KeyError:
             return {}
+
+    def reload(self):
+        """Reload the configuration from disk."""
+        self.config.read(self.config_filename)

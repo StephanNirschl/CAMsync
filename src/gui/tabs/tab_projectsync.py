@@ -96,6 +96,22 @@ class ProjectSyncTab(ttk.Frame):
         from core.project_sync_logic import load_projects
         load_projects(self)
 
+    def reload_config(self, config):
+        """Reload configuration values used by this tab."""
+        self.config = config
+        self.db_path = config.get(
+            "projects",
+            "database_path",
+            fallback=os.path.join(os.getenv("APPDATA"), "CAMsync", "project_sync.db"),
+        )
+        self.local_dir = config.get(
+            "projects",
+            "local_working_directory",
+            fallback="C:/CAMsync/Local",
+        )
+        init_db(self.db_path)
+        self.load_projects()
+
     def on_right_click(self, event):
         item_id = self.tree.identify_row(event.y)
         if not item_id:
