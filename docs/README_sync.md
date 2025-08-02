@@ -15,6 +15,12 @@ Diese Dokumentation beschreibt die Logik und den Ablauf der Projektsynchronisati
 | locked_by     | text   | Benutzername, der das Projekt gesperrt hat        |
 | locked_since  | text   | Zeitpunkt der Sperrung (ISO-Format)               |
 
+### Tabelle `scan_metadata`
+| Spalte | Typ  | Beschreibung                               |
+|--------|------|--------------------------------------------|
+| key    | text | Schlüssel, z. B. `last_scan`               |
+| value  | text | Zugehöriger Wert (Zeitstempel als ISO-String) |
+
 ---
 
 ## 🔁 Sync-Mechanismus
@@ -26,6 +32,9 @@ Diese Dokumentation beschreibt die Logik und den Ablauf der Projektsynchronisati
 - Erkennt `__LOCKED` Ordner als gleichwertig zum Originalnamen.
 - Fragt Benutzer, ob `__LOCKED` Zustand übernommen werden soll, wenn Inkonsistenz entdeckt wird.
 - Neue Projekte werden in die Datenbank eingetragen.
+- Speichert den Zeitpunkt des erfolgreichen Scans in `scan_metadata`.
+- Vergleicht beim Start den letzten Scan-Zeitstempel mit dem Änderungszeitpunkt des Netzwerkordners und überspringt den Scan, wenn keine Änderungen vorliegen.
+- Ein manueller Scan kann über den Button **„Projekte scannen“** erzwungen werden.
 
 ### `load_projects()`
 - Holt alle Projekt-Einträge aus der Datenbank.
