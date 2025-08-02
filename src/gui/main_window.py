@@ -154,6 +154,8 @@ class MainWindow:
                 if section not in self.config.config.sections():
                     continue
                 for key, value in self.config.get_section(section).items():
+                    if section == "optionstoolingdb" and key != "enable_tooling_db":
+                        continue
                     ttk.Label(content_frame, text=key).grid(row=content_row, column=0, sticky="w", padx=10)
 
                     if value in ("0", "1", "true", "false", "yes", "no"):
@@ -196,7 +198,7 @@ class MainWindow:
             current_row += 1
 
         create_group("Tools", ["tools", "optionstools"])
-        create_group("Tooling DB", ["toolingdb", "optionstoolingdb"])
+        create_group("Tooling DB", ["optionstoolingdb"])
         create_group("Projects", ["projects", "optionsproject"])
         create_group("Projects CLEAN UP", ["cleanup"])
         create_group("GUI", ["gui"])
