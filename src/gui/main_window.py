@@ -270,6 +270,13 @@ class MainWindow:
         with open(self.config_path, "w") as configfile:
             self.config.config.write(configfile)
 
+        # Konfiguration neu laden, damit in-memory Werte aktualisiert werden
+        self.config.reload()
+
+        # Tabs oder Komponenten, die die Konfiguration cachen, aktualisieren
+        if self.tab_projectsync:
+            self.tab_projectsync.reload_config(self.config)
+
         # === Tabs prüfen und ggf. aktualisieren ===
         new_project_status = self.config.get("optionsproject", "enable_project_sync", fallback="0") in ("1", "true", "yes", "on")
         if new_project_status != self.project_sync_enabled:
