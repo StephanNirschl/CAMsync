@@ -73,7 +73,11 @@ class ProjectSyncTab(ttk.Frame):
 
         button_frame = ttk.Frame(self)
         button_frame.pack(pady=5)
-        ttk.Button(button_frame, text="Projekte scannen", command=lambda: scan_and_sync_projects(self)).pack(side="left", padx=5)
+        ttk.Button(
+            button_frame,
+            text="Projekte scannen",
+            command=lambda: scan_and_sync_projects(self, force=True),
+        ).pack(side="left", padx=5)
 
         self.hover_popup = None  # 🆕 Tooltip-Fenster für Logging-Infos
 

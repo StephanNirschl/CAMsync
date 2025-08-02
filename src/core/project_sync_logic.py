@@ -43,6 +43,16 @@ def init_db(db_path):
         )
     """)
 
+    # Speichert Metadaten wie den Zeitpunkt des letzten erfolgreichen Netzwerkscans
+    c.execute(
+        """
+        CREATE TABLE IF NOT EXISTS scan_metadata (
+            key TEXT PRIMARY KEY,
+            value TEXT
+        )
+        """
+    )
+
     conn.commit()
     conn.close()
 
@@ -96,16 +106,47 @@ def load_projects(tab):
     # Wichtig: Expand-Zustand leicht verzögert wiederherstellen
     tab.after(50, lambda: restore_expanded_nodes(tab.tree, expanded))
 
-def scan_and_sync_projects(tab, silent=False):
+def scan_and_sync_projects(tab, silent=False, force=False):
     """
     Scannt das Netzwerkverzeichnis nach Projekten und synchronisiert sie mit der lokalen Datenbank.
     Entfernt verwaiste Einträge und erkennt __LOCKED-Projekte als dieselben Einträge.
+    Wenn ``force`` False ist, wird der Scan nur ausgeführt, wenn sich das
+    Netzwerkverzeichnis seit dem letzten erfolgreichen Scan geändert hat.
     """
     from gui.popup_centered import show_centered_popup, show_centered_yesno_popup
 
     removed = 0
     conn = sqlite3.connect(tab.db_path)
     c = conn.cursor()
+
+    # Tabelle für Scan-Metadaten sicherstellen
+    c.execute(
+        """
+        CREATE TABLE IF NOT EXISTS scan_metadata (
+            key TEXT PRIMARY KEY,
+            value TEXT
+        )
+        """
+    )
+
+    base_path = tab.config.get("projects", "network_project_root", fallback="")
+
+    # Prüfen, ob ein Scan notwendig ist
+    if not force and base_path and os.path.isdir(base_path):
+        c.execute("SELECT value FROM scan_metadata WHERE key = 'last_scan'")
+        row = c.fetchone()
+        if row:
+            try:
+                last_scan = datetime.fromisoformat(row[0])
+                root_mtime = datetime.fromtimestamp(os.path.getmtime(base_path))
+                if root_mtime <= last_scan:
+                    conn.close()
+                    if not silent:
+                        show_centered_popup(tab, "Info", "Keine Änderungen seit letztem Scan.")
+                    load_projects(tab)
+                    return
+            except Exception:
+                pass
 
     # 1. Verwaiste Projekte entfernen
     c.execute("SELECT id, path FROM projects")
@@ -116,7 +157,6 @@ def scan_and_sync_projects(tab, silent=False):
     conn.commit()
 
     # 2. Netzwerkpfad prüfen
-    base_path = tab.config.get("projects", "network_project_root", fallback="")
     if not base_path or not os.path.isdir(base_path):
         conn.close()
         messagebox.showerror("Fehler", f"Pfad aus [projects] network_project_root nicht gefunden:\n{base_path}")
@@ -183,6 +223,12 @@ def scan_and_sync_projects(tab, silent=False):
                     else:
                         # Optional: Du kannst hier den Pfad aktualisieren, falls der neue Pfad korrekt ist
                         c.execute("UPDATE projects SET path = ? WHERE name = ?", (detected_path, normalized_name))
+
+    # Zeitpunkt des erfolgreichen Scans speichern
+    c.execute(
+        "REPLACE INTO scan_metadata (key, value) VALUES ('last_scan', ?)",
+        (datetime.now().isoformat(),),
+    )
 
     conn.commit()
     conn.close()
