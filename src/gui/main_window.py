@@ -68,6 +68,12 @@ class MainWindow:
         tools_tab = ToolsTab(self.notebook, config=self.config)
         self.notebook.add(tools_tab, text="ToolDB")
 
+        if self.config.get("optionstoolingdb", "enable_tooling_db", fallback="0") in ("1", "true", "yes", "on"):
+            from gui.tabs.tab_toolingdb import ToolingDBTab
+            self.tab_toolingdb = ToolingDBTab(self.notebook, config=self.config)
+            self.notebook.add(self.tab_toolingdb, text="Tooling DB")
+        else:
+            self.tab_toolingdb = None
 
         if self.cleanup_enabled:
             from gui.tabs.tab_cleanup import CleanupTab
@@ -190,6 +196,7 @@ class MainWindow:
             current_row += 1
 
         create_group("Tools", ["tools", "optionstools"])
+        create_group("Tooling DB", ["toolingdb", "optionstoolingdb"])
         create_group("Projects", ["projects", "optionsproject"])
         create_group("Projects CLEAN UP", ["cleanup"])
         create_group("GUI", ["gui"])
