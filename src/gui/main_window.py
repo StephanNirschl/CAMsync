@@ -36,6 +36,7 @@ class MainWindow:
         self.config_path = config.config_filename
         self.project_sync_enabled = self.config.get("optionsproject", "enable_project_sync", fallback="0") in ("1", "true", "yes", "on")
         self.cleanup_enabled = self.config.get("cleanup", "enable_cleanup", fallback="1") in ("1", "true", "yes", "on")
+        self.tooling_db_enabled = self.config.get("optionstoolingdb", "enable_tooling_db", fallback="0") in ("1", "true", "yes", "on")
 
 
 
@@ -294,6 +295,22 @@ class MainWindow:
                     self.notebook.forget(index)
                     self.tab_projectsync = None
                 changes.append("🗑 'Projects'-Tab wurde deaktiviert.")
+
+        new_toolingdb_status = self.config.get("optionstoolingdb", "enable_tooling_db", fallback="0") in ("1", "true", "yes", "on")
+        if new_toolingdb_status != self.tooling_db_enabled:
+            self.tooling_db_enabled = new_toolingdb_status
+            if new_toolingdb_status:
+                from gui.tabs.tab_toolingdb import ToolingDBTab
+                self.tab_toolingdb = ToolingDBTab(self.notebook, config=self.config)
+                settings_index = self.notebook.index("end") - 1
+                self.notebook.insert(settings_index, self.tab_toolingdb, text="Tooling DB")
+                changes.append("✅ 'Tooling DB'-Tab wurde aktiviert.")
+            else:
+                if self.tab_toolingdb:
+                    index = self.notebook.index(self.tab_toolingdb)
+                    self.notebook.forget(index)
+                    self.tab_toolingdb = None
+                changes.append("🗑 'Tooling DB'-Tab wurde deaktiviert.")
 
         new_cleanup_status = self.config.get("cleanup", "enable_cleanup", fallback="1") in ("1", "true", "yes", "on")
         if new_cleanup_status != self.cleanup_enabled:
