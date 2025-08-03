@@ -58,6 +58,7 @@ class MainWindow:
     def create_tabs(self):
         
         
+        # === Projects Tab ===
         if self.config.get("optionsproject", "enable_project_sync", fallback="0") in ("1", "true", "yes", "on"):
             from gui.tabs.tab_projectsync import ProjectSyncTab
             self.tab_projectsync = ProjectSyncTab(self.notebook, config=self.config)
@@ -65,17 +66,7 @@ class MainWindow:
         else:
             self.tab_projectsync = None
 
-
-        tools_tab = ToolsTab(self.notebook, config=self.config)
-        self.notebook.add(tools_tab, text="ToolDB")
-
-        if self.config.get("optionstoolingdb", "enable_tooling_db", fallback="0") in ("1", "true", "yes", "on"):
-            from gui.tabs.tab_toolingdb import ToolingDBTab
-            self.tab_toolingdb = ToolingDBTab(self.notebook, config=self.config)
-            self.notebook.add(self.tab_toolingdb, text="Tooling DB")
-        else:
-            self.tab_toolingdb = None
-
+        # === Projects Clean Up Tab ===
         if self.cleanup_enabled:
             from gui.tabs.tab_cleanup import CleanupTab
             self.tab_cleanup = CleanupTab(self.notebook, config=self.config)
@@ -83,7 +74,19 @@ class MainWindow:
         else:
             self.tab_cleanup = None
 
+        # === ToolSync Tab ===
+        self.tab_tools = ToolsTab(self.notebook, config=self.config)
+        self.notebook.add(self.tab_tools, text="ToolSync")
 
+        # === Tooling DB Tab ===
+        if self.config.get("optionstoolingdb", "enable_tooling_db", fallback="0") in ("1", "true", "yes", "on"):
+            from gui.tabs.tab_toolingdb import ToolingDBTab
+            self.tab_toolingdb = ToolingDBTab(self.notebook, config=self.config)
+            self.notebook.add(self.tab_toolingdb, text="Tooling DB")
+        else:
+            self.tab_toolingdb = None
+
+        # Settings tab should always be last
         self.create_settings_tab()
 
 
@@ -198,10 +201,10 @@ class MainWindow:
 
             current_row += 1
 
-        create_group("Tools", ["tools", "optionstools"])
-        create_group("Tooling DB", ["optionstoolingdb"])
         create_group("Projects", ["projects", "optionsproject"])
         create_group("Projects CLEAN UP", ["cleanup"])
+        create_group("ToolSync", ["tools", "optionstools"])
+        create_group("Tooling DB", ["optionstoolingdb"])
         create_group("GUI", ["gui"])
         create_group("Logs", ["logging"])
         create_group("Allgemein", ["scheduler", "users"])
@@ -318,8 +321,8 @@ class MainWindow:
             if new_cleanup_status:
                 from gui.tabs.tab_cleanup import CleanupTab
                 self.tab_cleanup = CleanupTab(self.notebook, config=self.config)
-                settings_index = self.notebook.index("end") - 1
-                self.notebook.insert(settings_index, self.tab_cleanup, text="Projects Clean Up")
+                insert_index = 1 if self.tab_projectsync else 0
+                self.notebook.insert(insert_index, self.tab_cleanup, text="Projects Clean Up")
                 changes.append("✅ 'Projects Clean Up'-Tab wurde aktiviert.")
             else:
                 if self.tab_cleanup:
