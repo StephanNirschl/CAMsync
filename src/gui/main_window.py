@@ -48,8 +48,6 @@ class MainWindow:
 
         self.available_themes = ["light", "dark"]
 
-        print("DEBUG config:", self.config.get("optionsproject", "enable_project_sync", fallback="NOT FOUND"))
-        
         self.create_tabs()
 
 
