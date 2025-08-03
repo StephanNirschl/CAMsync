@@ -58,14 +58,6 @@ class MainWindow:
     def create_tabs(self):
         
         
-        if self.config.get("optionsproject", "enable_project_sync", fallback="0") in ("1", "true", "yes", "on"):
-            from gui.tabs.tab_projectsync import ProjectSyncTab
-            self.tab_projectsync = ProjectSyncTab(self.notebook, config=self.config)
-            self.notebook.add(self.tab_projectsync, text="Projects")
-        else:
-            self.tab_projectsync = None
-
-
         tools_tab = ToolsTab(self.notebook, config=self.config)
         self.notebook.add(tools_tab, text="ToolSync")
 
@@ -75,6 +67,13 @@ class MainWindow:
             self.notebook.add(self.tab_toolingdb, text="Tooling DB")
         else:
             self.tab_toolingdb = None
+
+        if self.config.get("optionsproject", "enable_project_sync", fallback="0") in ("1", "true", "yes", "on"):
+            from gui.tabs.tab_projectsync import ProjectSyncTab
+            self.tab_projectsync = ProjectSyncTab(self.notebook, config=self.config)
+            self.notebook.add(self.tab_projectsync, text="Projects")
+        else:
+            self.tab_projectsync = None
 
         if self.cleanup_enabled:
             from gui.tabs.tab_cleanup import CleanupTab
