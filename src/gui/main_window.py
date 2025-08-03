@@ -79,7 +79,7 @@ class MainWindow:
         if self.cleanup_enabled:
             from gui.tabs.tab_cleanup import CleanupTab
             self.tab_cleanup = CleanupTab(self.notebook, config=self.config)
-            self.notebook.add(self.tab_cleanup, text="Projects Clean up")
+            self.notebook.add(self.tab_cleanup, text="Projects Clean Up")
         else:
             self.tab_cleanup = None
 
@@ -201,7 +201,7 @@ class MainWindow:
         create_group("ToolSync", ["tools", "optionstools"])
         create_group("Tooling DB", ["optionstoolingdb"])
         create_group("Projects", ["projects", "optionsproject"])
-        create_group("Projects Clean up", ["cleanup"])
+        create_group("Projects Clean Up", ["cleanup"])
         create_group("GUI", ["gui"])
         create_group("Logs", ["logging"])
         create_group("Allgemein", ["scheduler", "users"])
@@ -319,14 +319,14 @@ class MainWindow:
                 from gui.tabs.tab_cleanup import CleanupTab
                 self.tab_cleanup = CleanupTab(self.notebook, config=self.config)
                 settings_index = self.notebook.index("end") - 1
-                self.notebook.insert(settings_index, self.tab_cleanup, text="Projects Clean up")
-                changes.append("✅ 'Projects Clean up'-Tab wurde aktiviert.")
+                self.notebook.insert(settings_index, self.tab_cleanup, text="Projects Clean Up")
+                changes.append("✅ 'Projects Clean Up'-Tab wurde aktiviert.")
             else:
                 if self.tab_cleanup:
                     index = self.notebook.index(self.tab_cleanup)
                     self.notebook.forget(index)
                     self.tab_cleanup = None
-                changes.append("🗑 'Projects Clean up'-Tab wurde deaktiviert.")
+                changes.append("🗑 'Projects Clean Up'-Tab wurde deaktiviert.")
 
         # === Popup-Ausgabe anpassen ===
         if changes and settings_saved:
